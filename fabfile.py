@@ -26,7 +26,7 @@ def __gen_ssh_keypair():
         print(green("generating root ssh keypair"))
         if not os.path.isdir(key_dir): os.makedirs(key_dir)
         local("ssh-keygen -t {type} -N '' -C 'root@cluster' " \
-              "-f {priv_key}".format(priv_key=priv_key))
+              "-f {priv_key}".format(type=type,priv_key=priv_key))
 
 def __gen_ssh_hosts_keys():
 
@@ -80,9 +80,9 @@ def __dl_extract_netboot():
 def __create_needed_dirs():
 
     needed_dirs = [ 'pool', 'http' ]
-    for dir in needed_dir:
-        if not os.path.isdir(pool_dir):
-            os.makedirs(pool_dir)
+    for dir in needed_dirs:
+        if not os.path.isdir(dir):
+            os.makedirs(dir)
 
 @task
 def install_admin():
