@@ -1,0 +1,4 @@
+---
+- name: install apt-cacher-ng
+  apt: pkg=apt-cacher-ng state=installed
+  register: aptproxyinstalled

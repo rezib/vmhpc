@@ -1,0 +1,4 @@
+---
+- name: install httpd
+  apt: pkg=nginx state=installed
+  register: httpdinstalled

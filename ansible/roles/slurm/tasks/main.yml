@@ -1,0 +1,13 @@
+---
+- name: install slurm
+  apt: pkg=slurm-llnl state=installed
+  register: slurminstalled
+- name: install munge key
+  copy: src=munge.key dest=/etc/munge/munge.key owner=munge group=munge mode=0400
+  notify:
+  - restart munge
+- name: install slurm conf
+  when: slurminstalled|success
+  copy: src=slurm.conf dest=/etc/slurm-llnl/slurm.conf
+  notify:
+  - restart slurm

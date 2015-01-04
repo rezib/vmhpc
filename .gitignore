@@ -1,0 +1,6 @@
+*.pyc
+pool/*
+http/*
+ansible/roles/ssh/files/*
+ansible/roles/slurm/files/munge.key
+ansible/roles/bootserver/files/netboot.tar.gz

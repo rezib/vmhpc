@@ -1,0 +1,61 @@
+---
+- name: debconf ldap password1
+  debconf: name=slapd question='slapd/password1' value={{ldap_passwd}} vtype=password
+  register: slapdpwd1
+- name: debconf ldap password2
+  debconf: name=slapd question='slapd/password2' value={{ldap_passwd}} vtype=password
+  register: slapdpwd2
+- name: install ldap server
+  apt: pkg=slapd state=installed
+  when: mode == "server" and slapdpwd1 and slapdpwd2
+  register: ldapserverinstalled
+- name: install ldap utils
+  apt: pkg=ldap-utils state=installed
+- name: install boostrap
+  copy: src=bootstrap.ldif dest=/tmp/bootstrap.ldif
+  register: bootstrapinstalled
+  when: ldapserverinstalled|changed
+- name: bootstrap ldap
+  shell: ldapadd -H ldap:/// -D cn=admin,dc=cluster,dc=local -w {{ldap_passwd}} -f /tmp/bootstrap.ldif
+  when: ldapserverinstalled|changed and bootstrapinstalled
+- name: install ldap client conf
+  copy: src=ldap.conf dest=/etc/ldap/ldap.conf
+
+- name: debconf nslcd ldap-urils
+  debconf: name=nslcd question='nslcd/ldap-urils' value='ldap://admin/' vtype=string
+  register: debconfnslcdldapurils
+- name: debconf nslcd ldap-base
+  debconf: name=nslcd question='nslcd/ldap-base' value='dc=cluster,dc=local' vtype=string
+  register: debconfnslcdldapbase
+- name: debconf nsswitch
+  debconf: name=libnss-ldapd question='libnss-ldapd/nsswitch' value='group, passwd, shadow' vtype=multiselect
+  register: debconfnsswitch
+- name: install libnss-ldapd
+  apt: pkg=libnss-ldapd state=installed install_recommends=no
+  when: debconfnslcdldapurils and debconfnslcdldapbase and debconfnsswitch
+
+
+- name: debconf libpam-ldap ldap-server
+  debconf: name=libpam-ldap question='shared/ldapns/ldap-server' value='ldap://admin/' vtype=string
+  when: mode == "client"
+  register: debconfpamserver
+- name: debconf libpam-ldap base-dn
+  debconf: name=libpam-ldap question='shared/ldapns/base-dn' value='dc=cluster,dc=local' vtype=string
+  when: mode == "client"
+  register: debconfpambase
+- name: debconf libpam-ldap ldap_version
+  debconf: name=libpam-ldap question='shared/ldapns/ldap_version' value=3 vtype=select
+  when: mode == "client"
+  register: debconfpamvers
+- name: debconf libpam-ldap dbrootlogin
+  debconf: name=libpam-ldap question='libpam-ldap/dbrootlogin' value=false vtype=boolean
+  when: mode == "client"
+  register: debconfpamroot
+- name: debconf libpam-ldap dblogin
+  debconf: name=libpam-ldap question='libpam-ldap/dblogin' value=false vtype=boolean
+  when: mode == "client"
+  register: debconfpamlogin
+- name: install libpam-ldap
+  apt: pkg=libpam-ldap state=installed
+  when: mode == "client" and debconfpamserver and debconfpambase and debconfpamvers and debconfpamroot and debconfpamlogin
+

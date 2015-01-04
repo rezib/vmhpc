@@ -1,0 +1,7 @@
+Host *
+    UserKnownHostsFile ansible/roles/ssh/files/known_hosts
+
+Host ${self.name}
+    Hostname ${self.backbone.ip}
+    IdentityFile ansible/roles/ssh/files/id_rsa
+    User root

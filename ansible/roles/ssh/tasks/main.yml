@@ -1,0 +1,27 @@
+---
+- name: create ssh root directory
+  file: dest=/root/.ssh mode=750 state=directory owner=root group=root
+  register: sshrootdircreated
+- name: ssh admin private key
+  copy: src=id_rsa dest=/root/.ssh/id_rsa owner=root group=root mode=0600
+  when: sshrootdircreated|success and ansible_hostname == "admin"
+- name: ssh admin public key
+  copy: src=id_rsa.pub dest=/root/.ssh/id_rsa.pub owner=root group=root mode=0640
+  when: sshrootdircreated|success and ansible_hostname == "admin"
+- name: ssh authorized keys
+  copy: src=id_rsa.pub dest=/root/.ssh/authorized_keys owner=root group=root mode=0600
+  when: sshrootdircreated|success
+- name: ssh known hosts
+  copy: src=known_hosts dest=/etc/ssh/ssh_known_hosts owner=root group=root mode=0644
+- name: ssh ecdsa host private key
+  copy: src="{{ansible_hostname}}/ssh_host_ecdsa_key" dest=/etc/ssh/ssh_host_ecdsa_key owner=root group=root mode=0600
+- name: ssh ecdsa host public key
+  copy: src="{{ansible_hostname}}/ssh_host_ecdsa_key.pub" dest=/etc/ssh/ssh_host_ecdsa_key.pub owner=root group=root mode=0644
+- name: ssh rsa host private key
+  copy: src="{{ansible_hostname}}/ssh_host_rsa_key" dest=/etc/ssh/ssh_host_rsa_key owner=root group=root mode=0600
+- name: ssh rsa host public key
+  copy: src="{{ansible_hostname}}/ssh_host_rsa_key.pub" dest=/etc/ssh/ssh_host_rsa_key.pub owner=root group=root mode=0644
+- name: ssh dsa host private key
+  copy: src="{{ansible_hostname}}/ssh_host_dsa_key" dest=/etc/ssh/ssh_host_dsa_key owner=root group=root mode=0600
+- name: ssh dsa host public key
+  copy: src="{{ansible_hostname}}/ssh_host_dsa_key.pub" dest=/etc/ssh/ssh_host_dsa_key.pub owner=root group=root mode=0644

@@ -1,0 +1,1 @@
+/srv/home 10.11.0.0/24(rw,sync,fsid=0,no_subtree_check,no_root_squash)

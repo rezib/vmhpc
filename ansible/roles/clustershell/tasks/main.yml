@@ -1,0 +1,7 @@
+---
+- name: install clustershell
+  apt: pkg=clustershell state=installed
+  register: clustershellinstalled
+- name: clustershell groups file
+  when: clustershellinstalled|success
+  copy: src=groups.conf dest=/etc/clustershell/groups.conf owner=root group=root

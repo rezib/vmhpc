@@ -1,0 +1,3 @@
+---
+- name: enable pam mkhomedir
+  lineinfile: dest=/etc/pam.d/common-session state=present regexp="pam_mkhomedir" line="session required pam_mkhomedir.so skel=/etc/skel/ umask=0022"

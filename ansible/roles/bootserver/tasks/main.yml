@@ -1,0 +1,34 @@
+---
+- stat: path="{{wwwroot}}/debian-installer/amd64/initrd.gz"
+  register: st
+- name: install netboot
+  copy: src=netboot.tar.gz dest=/tmp/netboot.tar.gz owner=root group=root
+  register: netbootinstalled
+  when: not st.stat.exists
+- name: extract netboot
+  when: netbootinstalled|changed
+  shell: tar -xzf /tmp/netboot.tar.gz -C {{wwwroot}}
+- name: build config tarball
+  shell: tar -czf {{wwwroot}}/config.tar.gz -C /opt ansible
+- name: install preseed
+  copy: src=preseed.cfg dest="{{wwwroot}}/preseed.cfg"
+- name: install late-command
+  copy: src=late-command.sh dest="{{wwwroot}}/late-command.sh"
+- name: install ether file
+  copy: src=ethers dest=/etc/ethers owner=root group=root
+  notify:
+  - restart dnsmasq
+- name: install hosts file
+  copy: src=hosts dest=/etc/hosts owner=root group=root
+  notify:
+  - restart dnsmasq
+- name: install dnsmasq conf
+  copy: src=cluster.conf dest=/etc/dnsmasq.d/cluster.conf owner=root group=root
+  notify:
+  - restart dnsmasq
+- name: create tftproot
+  file: dest={{tftproot}} mode=775 state=directory owner=root group=root
+  register: tftprootdir
+- name: install ipxe config
+  copy: src=nodes.ipxe dest="{{tftproot}}/nodes.ipxe" owner=root group=root
+  when: tftprootdir|success

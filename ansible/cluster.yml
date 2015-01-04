@@ -1,0 +1,28 @@
+- hosts: admin
+  roles:
+    - clustershell
+    - bootserver
+    - aptproxy
+    - network
+    - ssh
+    - { role: nfs, mode: "server", }
+    - { role: ldap, mode: "server", }
+    - slurm
+- hosts: login
+  roles:
+    - network
+    - mkhome
+    - ssh
+    - apt
+    - { role: nfs, mode: "client", }
+    - { role: ldap, mode: "client", }
+    - slurm
+    - { role: scientific, mode: "builder", }
+- hosts: cn*
+  roles:
+    - ssh
+    - apt
+    - { role: nfs, mode: "client", }
+    - { role: ldap, mode: "client", }
+    - slurm
+    - { role: scientific, mode: "compute", }

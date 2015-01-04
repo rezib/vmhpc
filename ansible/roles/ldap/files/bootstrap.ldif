@@ -1,0 +1,47 @@
+dn: ou=people,dc=cluster,dc=local
+ou: people
+objectClass: organizationalUnit
+
+dn: ou=groups,dc=cluster,dc=local
+ou: groups
+objectClass: organizationalUnit
+
+dn: cn=chimistes,ou=groups,dc=cluster,dc=local
+cn: chimistes
+gidNumber: 10001
+objectClass: top
+objectClass: posixGroup
+
+dn: uid=pierre,ou=people,dc=cluster,dc=local
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+uid: pierre
+cn: Pierre Curie
+givenName: Pierre
+sn: Curie
+mail: pierre@cluster.local
+uidNumber: 10001
+gidNumber: 10001
+userPassword: secret
+homeDirectory: /home/pierre
+loginShell: /bin/bash
+
+dn: uid=marie,ou=people,dc=cluster,dc=local
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+uid: marie
+cn: Marie Curie
+givenName: Marie
+sn: Curie
+mail: marie@cluster.local
+uidNumber: 10002
+gidNumber: 10001
+userPassword: secret
+homeDirectory: /home/marie
+loginShell: /bin/bash

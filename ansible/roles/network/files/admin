@@ -1,0 +1,14 @@
+auto lo eth0 eth1
+
+iface lo inet loopback
+
+allow-hotplug eth0
+iface eth0 inet static
+        address 10.11.0.1
+        netmask 255.255.255.0
+
+allow-hotplug eth1
+iface eth1 inet static
+        address 10.5.0.1
+        netmask 255.255.255.0
+        gateway 10.5.0.254

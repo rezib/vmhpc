@@ -1,0 +1,100 @@
+testbed: cluster
+storagepools:
+    - name: pool
+      path: pool
+storagevolumes:
+    - name: admin
+      storagepool: pool
+      size: 50
+    - name: login
+      storagepool: pool
+      size: 50
+    - name: cn1
+      storagepool: pool
+      size: 50
+    - name: cn2
+      storagepool: pool
+      size: 50
+    - name: cn3
+      storagepool: pool
+      size: 50
+networks:
+    - name: backbone
+      forward: nat
+      ip_host: 10.5.0.254
+      netmask: 255.255.255.0
+      domain: cluster.local
+      dhcp:
+        start: 10.5.0.1
+        end: 10.5.0.1
+      pxe:
+        tftp_dir: http
+        boot_file: admin.ipxe
+    - name: interco
+domains:
+    - name: admin
+      cpu: 2
+      memory: 512M
+      netifs:
+          - network: interco
+          - network: backbone
+            ip: 10.5.0.1
+      graphics: spice
+      disks:
+          - device: sda
+            storage_volume: admin
+      templates:
+          files:
+              - name: preseed
+                input: templates/preseed.cfg
+                output: http/preseed.cfg
+              - name: ipxe
+                input: templates/admin.ipxe
+                output: http/admin.ipxe
+              - name: late-command
+                input: templates/late-command.sh
+                output: http/late-command.sh
+              - name: ssh-config
+                input: templates/ssh_config
+                output: http/ssh_config
+    - name: login
+      cpu: 2
+      memory: 256M
+      netifs:
+          - network: interco
+            mac: 00:16:3e:a0:80:aa
+          - network: backbone
+      graphics: spice
+      disks:
+          - device: sda
+            storage_volume: login
+    - name: cn1
+      cpu: 2
+      memory: 256M
+      netifs:
+          - network: interco
+            mac: 00:16:3e:a0:80:01
+      graphics: spice
+      disks:
+          - device: sda
+            storage_volume: cn1
+    - name: cn2
+      cpu: 2
+      memory: 256M
+      netifs:
+          - network: interco
+            mac: 00:16:3e:a0:80:02
+      graphics: spice
+      disks:
+          - device: sda
+            storage_volume: cn2
+    - name: cn3
+      cpu: 2
+      memory: 256M
+      netifs:
+          - network: interco
+            mac: 00:16:3e:a0:80:03
+      graphics: spice
+      disks:
+          - device: sda
+            storage_volume: cn3

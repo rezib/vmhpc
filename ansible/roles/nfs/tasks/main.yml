@@ -1,0 +1,15 @@
+---
+- name: install nfs server
+  apt: pkg=nfs-kernel-server state=installed
+  when: mode == "server"
+- name: install exports
+  copy: src=exports dest=/etc/exports owner=root group=root
+  when: mode == "server"
+  notify:
+  - restart nfs-server
+- name: create nfs homes directory
+  file: dest=/srv/home mode=775 state=directory owner=root group=root
+  when: mode == "server"
+- name: mount home
+  mount: name=/home src='admin:' fstype=nfs state=present
+  when: mode == "client"

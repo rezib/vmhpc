@@ -1,0 +1,5 @@
+---
+- name: conf debconf frontend noninteractive
+  lineinfile: "dest=/etc/debconf.conf state=present regexp='^Frontend:' insertafter='^Templates: templatedb$' line='Frontend: noninteractive'"
+- name: install assumeyes conf
+  copy: src=90assumeyes dest=/etc/apt/apt.conf.d/90assumeyes

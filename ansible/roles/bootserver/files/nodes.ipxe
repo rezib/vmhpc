@@ -1,0 +1,4 @@
+#!ipxe
+kernel http://admin/debian-installer/amd64/linux url=http://admin/preseed.cfg auto=true priority=critical keymap=us netcfg/choose_interface=eth0 netcfg/no_default_route=true
+initrd http://admin/debian-installer/amd64/initrd.gz
+boot

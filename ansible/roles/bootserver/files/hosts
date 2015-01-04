@@ -1,0 +1,7 @@
+127.0.0.1	localhost
+
+10.11.0.1   admin.cluster.local admin
+10.11.0.2   login.cluster.local login
+10.11.0.11  cn1.cluster.local cn1
+10.11.0.12  cn2.cluster.local cn2
+10.11.0.13  cn3.cluster.local cn3

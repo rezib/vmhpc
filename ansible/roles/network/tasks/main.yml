@@ -1,0 +1,4 @@
+---
+- name: install network interfaces
+  copy: src={{ansible_hostname}} dest=/etc/network/interfaces owner=root group=root
+  when: ansible_hostname == "admin" or ansible_hostname == "login"

@@ -1,0 +1,5 @@
+admin ansible_connection=local
+login
+
+[compute]
+cn[1:3]

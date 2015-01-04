@@ -1,0 +1,14 @@
+---
+- name: install build-essential
+  apt: pkg=build-essential state=installed
+  when: mode == "builder"
+- name: install openmpi
+  apt: pkg=openmpi-bin state=installed
+- name: install openmpi headers
+  apt: pkg=libopenmpi-dev state=installed
+  when: mode == "builder"
+- name: install atlas library
+  apt: pkg=libatlas3-base state=installed
+- name: install atlas headers
+  apt: pkg=libatlas-base-dev state=installed
+  when: mode == "builder"

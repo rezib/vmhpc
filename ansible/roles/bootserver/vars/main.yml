@@ -1,0 +1,3 @@
+---
+wwwroot: /usr/share/nginx/www
+tftproot: /var/tftp
