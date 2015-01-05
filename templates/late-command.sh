@@ -14,4 +14,4 @@ cd /opt/ansible
 
 mv hosts /etc/ansible/hosts
 
-ansible-playbook cluster.yml &> /var/log/ansible-run
+ansible-playbook -l ${HOSTNAME} cluster.yml &> /var/log/ansible-run
