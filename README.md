@@ -1,7 +1,7 @@
-Build a small and fake Linux HPC cluster with some virtual machines on your
-workstation.
+**Build a small and fake Linux HPC cluster with some virtual machines on your
+workstation.**
 
-Disclaimer: this is not real HPC! Do not expect good performances at all.
+*Disclaimer:* this is not real HPC! Do not expect good performances at all.
 
 This testbed only aims to show and explain how real Linux HPC clusters work.
 The purpose is purely educational. The targeted audience is any people who feel
@@ -10,7 +10,9 @@ technologies.
 
 The cluster employs the following software:
 
+- Debian GNU/Linux
 - ansible
+- dnsmasq
 - slurm
 - openmpi
 - cblas
@@ -26,6 +28,9 @@ The cluster is composed of 5 nodes:
   - ansible server
   - LDAP server
   - NFS server
+  - PXE server (DHCP/TFTP)
+  - APT repository proxy
+  - DNS server
 - login:
   - SSH frontend for users
   - Scientific codes compilation
