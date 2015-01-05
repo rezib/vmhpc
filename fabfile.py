@@ -62,20 +62,21 @@ def __gen_ssh_hosts_keys():
 def __gen_munge_key():
 
     key_path="ansible/roles/slurm/files/munge.key"
-    local("dd if=/dev/urandom bs=1 count=1024 > {key_path}" \
-          .format(key_path=key_path))
+
+    if not os.path.exists(key_path):
+        local("dd if=/dev/urandom bs=1 count=1024 > {key_path}" \
+              .format(key_path=key_path))
 
 def __dl_extract_netboot():
 
     netboot_url = "http://ftp.fr.debian.org/debian/dists/wheezy/main/" \
                   "installer-amd64/current/images/netboot/netboot.tar.gz"
-    netboot_lpath = "/tmp/netboot.tar.gz"
+    netboot_lpath = "ansible/roles/bootserver/files/netboot.tar.gz"
     if not os.path.exists('http/debian-installer/amd64/linux'):
         local("wget {url} -O {lpath}" \
               .format(url=netboot_url,
                       lpath=netboot_lpath))
         local("tar -xzf {lpath} -C http/".format(lpath=netboot_lpath))
-        local("rm {lpath}".format(lpath=netboot_lpath))
 
 def __create_needed_dirs():
 
