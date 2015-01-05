@@ -16,7 +16,7 @@
   register: bootstrapinstalled
   when: ldapserverinstalled|changed
 - name: bootstrap ldap
-  shell: ldapadd -H ldap:/// -D cn=admin,dc=cluster,dc=local -w {{ldap_passwd}} -f /tmp/bootstrap.ldif
+  shell: su openldap -s /bin/dash -c '/usr/sbin/slapadd -v -l /tmp/bootstrap.ldif'
   when: ldapserverinstalled|changed and bootstrapinstalled
 - name: install ldap client conf
   copy: src=ldap.conf dest=/etc/ldap/ldap.conf
