@@ -76,6 +76,6 @@ Note that it also downloads about 600MB of debian packages over the Internet.
 
 At the end, you will be able to:
 
-- connect on login node as normal user on login node
+- connect on login node as normal user
 - compile a scientific code that uses BLAS and MPI, such as HPL linpack
 - run it in on compute nodes with Slurm workload manager
