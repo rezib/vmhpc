@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 from fabric.api import *
-from fabric.colors import red, green
+from fabric.colors import red, green, blue
+from fabric.exceptions import NetworkError
 
 import cloubed
 import logging
 import os
+import time
 
 # use ~/.ssh/config
 env.use_ssh_config = True
@@ -85,45 +87,29 @@ def __create_needed_dirs():
         if not os.path.isdir(dir):
             os.makedirs(dir)
 
-@task
-def install_admin():
-
-    node = "admin"
-
-    __gen_ssh_keypair()
-    __gen_ssh_hosts_keys()
-    __gen_munge_key()
-    __create_needed_dirs()
-    __dl_extract_netboot()
-    __pack_config()
-
-    # generate the config files based on templates
-    cloubed.gen_file(domain_name=node, template_name="ipxe")
-    cloubed.gen_file(domain_name=node, template_name="preseed")
-    cloubed.gen_file(domain_name=node, template_name="late-command")
-    cloubed.gen_file(domain_name=node, template_name="ssh-config")
-
-    # boot admin on network device
-    cloubed.boot_vm(domain_name=node,
-                    bootdev="network",
-                    overwrite_disks=True,
-                    recreate_networks=True)
-
-    # wait admin shutdown
-    cloubed.wait_event(node, "STOPPED", "SHUTDOWN")
-
-    # boot admin on disk device
-    cloubed.boot_vm(node)
-
 def __pack_config():
 
     tar_file_name = "config.tar.gz"
     # generate tarball
     local("tar -czf http/{tarball} ansible".format(tarball=tar_file_name))
 
+def __wait_ssh():
+
+    ssh_ready = False
+    while not ssh_ready:
+        with quiet():
+            try:
+                ssh_ready = run("uname").succeeded
+            except NetworkError:
+                print(blue("waiting ssh to be ready"))
+                time.sleep(3)
+                pass
+
 @task
 @hosts('admin')
 def run_ansible():
+
+    """Run ansible to configure all nodes"""
 
     __pack_config()
     put('http/config.tar.gz', '/tmp/config.tar.gz')
@@ -133,14 +119,19 @@ def run_ansible():
         run("ansible-playbook cluster.yml")
 
 @task
-def install_login():
+def install_node():
 
-    node = "login"
+    """Install one particular node"""
+
+    node = env.host_string
+
+    recreate_networks = node == 'admin'
 
     # boot node on network device
     cloubed.boot_vm(domain_name=node,
                     bootdev="network",
-                    overwrite_disks=True)
+                    overwrite_disks=True,
+                    recreate_networks=recreate_networks)
 
     # wait node shutdown
     cloubed.wait_event(node, "STOPPED", "SHUTDOWN")
@@ -149,17 +140,31 @@ def install_login():
     cloubed.boot_vm(node)
 
 @task
-def install_node():
+def install_cluster():
 
-    node = env.host
+    """Install cluster from scratch"""
 
-    # boot node on network device
-    cloubed.boot_vm(domain_name=node,
-                    bootdev="network",
-                    overwrite_disks=True)
+    __gen_ssh_keypair()
+    __gen_ssh_hosts_keys()
+    __gen_munge_key()
+    __create_needed_dirs()
+    __dl_extract_netboot()
+    __pack_config()
 
-    # wait node shutdown
-    cloubed.wait_event(node, "STOPPED", "SHUTDOWN")
+    node = "admin"
 
-    # boot node on disk device
-    cloubed.boot_vm(node)
+    # generate the config files based on templates
+    cloubed.gen_file(domain_name=node, template_name="ipxe")
+    cloubed.gen_file(domain_name=node, template_name="preseed")
+    cloubed.gen_file(domain_name=node, template_name="late-command")
+    cloubed.gen_file(domain_name=node, template_name="ssh-config")
+
+    # install admin node
+    execute(install_node, hosts=[node])
+    # Wait SSH to be available on admin node as it kind of means that all
+    # services are running and that the node is able to install other nodes.
+    # Of course, this is not necessarily true but it is still better than a
+    # dumb sleep() and it does the job anyway.
+    execute(__wait_ssh, hosts=[node])
+
+    execute(install_node, hosts=['login', 'cn1', 'cn2', 'cn3'])
