@@ -1,7 +1,10 @@
 Host *
     UserKnownHostsFile ansible/roles/ssh/files/known_hosts
+    IdentityFile ansible/roles/ssh/files/id_rsa
+    User root
 
 Host ${self.name}
     Hostname ${self.backbone.ip}
-    IdentityFile ansible/roles/ssh/files/id_rsa
-    User root
+
+Host login
+    Hostname 10.5.0.2
