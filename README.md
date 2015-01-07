@@ -60,6 +60,8 @@ Software:
 Usage
 -----
 
+### Cluster installation
+
 Simply run the following command:
 
 ```
@@ -70,7 +72,6 @@ This will automatically create all virtual networks, launch, install and
 configure all virtual machines. At the end, the cluster will be fully
 operational.
 
-
 Beware, it takes quite a while to run, about 2 hours on a decent workstation.
 Note that it also downloads about 600MB of debian packages over the Internet.
 
@@ -79,3 +80,39 @@ At the end, you will be able to:
 - connect on login node as normal user
 - compile a scientific code that uses BLAS and MPI, such as HPL linpack
 - run it in on compute nodes with Slurm workload manager
+
+### Connect to admin node
+
+From your workstation:
+
+```
+$ ssh -F http/ssh_config admin
+```
+
+### Connect to login node
+
+From your workstation:
+
+```
+$ ssh -F http/ssh_config {pierre,marie}@login
+```
+
+Default password is `secret`.
+
+### Shutdown the cluster
+
+From `admin` node as root:
+
+```
+# clush -g all halt
+# halt
+```
+
+### Boot the cluster
+
+If the cluster has already been installed and you want to boot all nodes, run
+the following command from your workstation:
+
+```
+$ fab boot_cluster
+```
