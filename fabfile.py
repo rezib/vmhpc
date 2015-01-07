@@ -168,3 +168,23 @@ def install_cluster():
     execute(__wait_ssh, hosts=[node])
 
     execute(install_node, hosts=['login', 'cn1', 'cn2', 'cn3'])
+
+@task
+def boot_node():
+
+    """Boot one particular node"""
+
+    node = env.host_string
+    cloubed.boot_vm(node)
+
+@task
+def boot_cluster():
+
+    """Boot all nodes of the cluster"""
+
+    # boot admin node
+    execute(boot_node, hosts=['admin'])
+    # wait for all services to be available (NFS, etc)
+    execute(__wait_ssh, hosts=['admin'])
+    # boot all other nodes
+    execute(boot_node, hosts=['login', 'cn1', 'cn2', 'cn3'])
