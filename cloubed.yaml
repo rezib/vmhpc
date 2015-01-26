@@ -45,12 +45,12 @@ domains:
             storage_volume: admin
       templates:
           files:
-              - name: preseed
-                input: templates/preseed.cfg
-                output: http/preseed.cfg
               - name: ipxe
                 input: templates/admin.ipxe
                 output: tftp/admin.ipxe
+              - name: preseed
+                input: templates/preseed.cfg
+                output: http/preseed.cfg
               - name: post-install
                 input: templates/post-install.sh
                 output: http/post-install.sh
