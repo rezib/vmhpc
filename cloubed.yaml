@@ -51,9 +51,9 @@ domains:
               - name: ipxe
                 input: templates/admin.ipxe
                 output: tftp/admin.ipxe
-              - name: late-command
-                input: templates/late-command.sh
-                output: http/late-command.sh
+              - name: post-install
+                input: templates/post-install.sh
+                output: http/post-install.sh
               - name: ssh-config
                 input: templates/ssh_config
                 output: http/ssh_config

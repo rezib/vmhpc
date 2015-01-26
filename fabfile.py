@@ -156,7 +156,7 @@ def install_cluster():
     # generate the config files based on templates
     cloubed.gen_file(domain_name=node, template_name="ipxe")
     cloubed.gen_file(domain_name=node, template_name="preseed")
-    cloubed.gen_file(domain_name=node, template_name="late-command")
+    cloubed.gen_file(domain_name=node, template_name="post-install")
     cloubed.gen_file(domain_name=node, template_name="ssh-config")
 
     # install admin node

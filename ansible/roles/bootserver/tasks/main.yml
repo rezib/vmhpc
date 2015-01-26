@@ -12,8 +12,8 @@
   shell: tar -czf {{wwwroot}}/config.tar.gz -C /opt ansible
 - name: install preseed
   copy: src=preseed.cfg dest="{{wwwroot}}/preseed.cfg"
-- name: install late-command
-  copy: src=late-command.sh dest="{{wwwroot}}/late-command.sh"
+- name: install post-install
+  copy: src=post-install.sh dest="{{wwwroot}}/post-install.sh"
 - name: install ether file
   copy: src=ethers dest=/etc/ethers owner=root group=root
   notify:
