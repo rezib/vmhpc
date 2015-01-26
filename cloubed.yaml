@@ -28,7 +28,7 @@ networks:
         start: 10.5.0.1
         end: 10.5.0.1
       pxe:
-        tftp_dir: http
+        tftp_dir: tftp
         boot_file: admin.ipxe
     - name: interco
 domains:
@@ -50,7 +50,7 @@ domains:
                 output: http/preseed.cfg
               - name: ipxe
                 input: templates/admin.ipxe
-                output: http/admin.ipxe
+                output: tftp/admin.ipxe
               - name: late-command
                 input: templates/late-command.sh
                 output: http/late-command.sh

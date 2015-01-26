@@ -82,7 +82,7 @@ def __dl_extract_netboot():
 
 def __create_needed_dirs():
 
-    needed_dirs = [ 'pool', 'http' ]
+    needed_dirs = [ 'pool', 'http', 'tftp' ]
     for dir in needed_dirs:
         if not os.path.isdir(dir):
             os.makedirs(dir)
