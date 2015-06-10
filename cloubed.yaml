@@ -1,35 +1,13 @@
 testbed: cluster
-storagepools:
-    - name: pool
-      path: pool
-storagevolumes:
-    - name: admin
-      storagepool: pool
-      size: 50
-    - name: login
-      storagepool: pool
-      size: 50
-    - name: cn1
-      storagepool: pool
-      size: 50
-    - name: cn2
-      storagepool: pool
-      size: 50
-    - name: cn3
-      storagepool: pool
-      size: 50
 networks:
     - name: backbone
       forward: nat
-      ip_host: 10.5.0.254
-      netmask: 255.255.255.0
+      address: 10.5.0.254/24
       domain: cluster.local
       dhcp:
         start: 10.5.0.1
         end: 10.5.0.1
-      pxe:
-        tftp_dir: tftp
-        boot_file: admin.ipxe
+      pxe: tftp/admin.ipxe
     - name: interco
 domains:
     - name: admin
@@ -42,7 +20,8 @@ domains:
       graphics: spice
       disks:
           - device: sda
-            storage_volume: admin
+            name: admin
+            size: 50
       templates:
           files:
               - name: ipxe
@@ -67,7 +46,8 @@ domains:
       graphics: spice
       disks:
           - device: sda
-            storage_volume: login
+            name: login
+            size: 50
     - name: cn1
       cpu: 2
       memory: 256M
@@ -77,7 +57,8 @@ domains:
       graphics: spice
       disks:
           - device: sda
-            storage_volume: cn1
+            name: cn1
+            size: 50
     - name: cn2
       cpu: 2
       memory: 256M
@@ -87,7 +68,8 @@ domains:
       graphics: spice
       disks:
           - device: sda
-            storage_volume: cn2
+            name: cn2
+            size: 50
     - name: cn3
       cpu: 2
       memory: 256M
@@ -97,4 +79,5 @@ domains:
       graphics: spice
       disks:
           - device: sda
-            storage_volume: cn3
+            name: cn3
+            size: 50

@@ -1,4 +1,4 @@
 #!ipxe
-kernel http://${network.backbone.ip_host}:5432/http/debian-installer/amd64/linux auto=true priority=critical url=http://${network.backbone.ip_host}:5432/http/preseed.cfg keymap=us interface=eth1
-initrd http://${network.backbone.ip_host}:5432/http/debian-installer/amd64/initrd.gz
+kernel ${network.backbone.http_server}/http/debian-installer/amd64/linux auto=true priority=critical url=${network.backbone.http_server}/http/preseed.cfg keymap=us interface=eth1
+initrd ${network.backbone.http_server}/http/debian-installer/amd64/initrd.gz
 boot

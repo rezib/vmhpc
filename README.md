@@ -54,7 +54,7 @@ Hardware:
 Software:
 
 - GNU/Linux workstation and fairly recent Linux kernel
-- cloubed >= 0.4 with all its dependencies including Libvirt and KVM
+- cloubed >= 0.5 with all its dependencies including Libvirt and KVM
 - fabric
 
 Usage

@@ -71,8 +71,10 @@ def __gen_munge_key():
 
 def __dl_extract_netboot():
 
-    netboot_url = "http://ftp.fr.debian.org/debian/dists/wheezy/main/" \
-                  "installer-amd64/current/images/netboot/netboot.tar.gz"
+    deb_release = 'jessie'
+    netboot_url = "http://ftp.fr.debian.org/debian/dists/{deb_release}/main/" \
+                  "installer-amd64/current/images/netboot/netboot.tar.gz" \
+                    .format(deb_release=deb_release)
     netboot_lpath = "ansible/roles/bootserver/files/netboot.tar.gz"
     if not os.path.exists('http/debian-installer/amd64/linux'):
         local("wget {url} -O {lpath}" \
@@ -92,18 +94,6 @@ def __pack_config():
     tar_file_name = "config.tar.gz"
     # generate tarball
     local("tar -czf http/{tarball} ansible".format(tarball=tar_file_name))
-
-def __wait_ssh():
-
-    ssh_ready = False
-    while not ssh_ready:
-        with quiet():
-            try:
-                ssh_ready = run("uname").succeeded
-            except NetworkError:
-                print(blue("waiting ssh to be ready"))
-                time.sleep(3)
-                pass
 
 @task
 @hosts('admin')
@@ -125,19 +115,19 @@ def install_node():
 
     node = env.host_string
 
-    recreate_networks = node == 'admin'
+    recreate_networks = enable_http = node == 'admin'
 
     # boot node on network device
-    cloubed.boot_vm(domain_name=node,
-                    bootdev="network",
-                    overwrite_disks=True,
-                    recreate_networks=recreate_networks)
+    cloubed.boot(domain=node,
+                 bootdev="network",
+                 overwrite_disks=True,
+                 recreate_networks=recreate_networks)
 
     # wait node shutdown
-    cloubed.wait_event(node, "STOPPED", "SHUTDOWN")
+    cloubed.wait(node, "STOPPED", "SHUTDOWN", enable_http=enable_http)
 
     # boot node on disk device
-    cloubed.boot_vm(node)
+    cloubed.boot(node)
 
 @task
 def install_cluster():
@@ -154,10 +144,10 @@ def install_cluster():
     node = "admin"
 
     # generate the config files based on templates
-    cloubed.gen_file(domain_name=node, template_name="ipxe")
-    cloubed.gen_file(domain_name=node, template_name="preseed")
-    cloubed.gen_file(domain_name=node, template_name="post-install")
-    cloubed.gen_file(domain_name=node, template_name="ssh-config")
+    cloubed.gen(domain=node, template="ipxe")
+    cloubed.gen(domain=node, template="preseed")
+    cloubed.gen(domain=node, template="post-install")
+    cloubed.gen(domain=node, template="ssh-config")
 
     # install admin node
     execute(install_node, hosts=[node])
@@ -165,7 +155,7 @@ def install_cluster():
     # services are running and that the node is able to install other nodes.
     # Of course, this is not necessarily true but it is still better than a
     # dumb sleep() and it does the job anyway.
-    execute(__wait_ssh, hosts=[node])
+    cloubed.wait(node, 'tcp', 22)
 
     execute(install_node, hosts=['login', 'cn1', 'cn2', 'cn3'])
 
@@ -175,7 +165,7 @@ def boot_node():
     """Boot one particular node"""
 
     node = env.host_string
-    cloubed.boot_vm(node)
+    cloubed.boot(node)
 
 @task
 def boot_cluster():
@@ -185,6 +175,6 @@ def boot_cluster():
     # boot admin node
     execute(boot_node, hosts=['admin'])
     # wait for all services to be available (NFS, etc)
-    execute(__wait_ssh, hosts=['admin'])
+    cloubed.wait('admin', 'tcp', 22)
     # boot all other nodes
     execute(boot_node, hosts=['login', 'cn1', 'cn2', 'cn3'])

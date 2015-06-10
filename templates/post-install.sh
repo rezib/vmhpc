@@ -1,13 +1,13 @@
 #!/bin/bash
 
 HOSTNAME=$(hostname)
-SERVER=${network.backbone.ip_host}:5432
+SERVER=${network.backbone.http_server}
 
 # workaround for a bug with iproute/iproute2 when wheezy-backports is enable
 apt-get install --reinstall --yes isc-dhcp-client ifupdown
 apt-get install --yes ansible
 
-wget http://${SERVER}/http/config.tar.gz -O /tmp/config.tar.gz
+wget ${SERVER}/http/config.tar.gz -O /tmp/config.tar.gz
 tar -xzf /tmp/config.tar.gz --no-same-owner -C /opt
 
 cd /opt/ansible
